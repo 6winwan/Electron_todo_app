@@ -6,6 +6,9 @@ import 'vuetify/dist/vuetify.css'
 import App from './App'
 import router from './router'
 import store from './store'
+import moment from 'moment'
+moment.locale('en')
+Vue.prototype.$moment = moment
 
 Vue.use(Vuetify)
 if (!process.env.IS_WEB) Vue.use(require('vue-electron'))

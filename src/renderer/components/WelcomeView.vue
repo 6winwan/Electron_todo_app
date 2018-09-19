@@ -1,68 +1,162 @@
 <template>
-  <v-layout row>
-    <v-flex>
-      <v-card>
-        <v-list two-line>
-          <template v-for="(item, index) in items">
-            <v-subheader
-              v-if="item.header"
-              :key="item.header"
-            >
-              {{ item.header }}
-            </v-subheader>
-
-            <v-divider
-              v-else-if="item.divider"
-              :inset="item.inset"
-              :key="index"
-            ></v-divider>
-
-            <v-list-tile
-              v-else
-              :key="item.title"
+  <v-layout>
+    <v-flex xs12>
+      <v-list two-line>
+        <template v-for="(td, i) in todos">
+          <v-list-tile
+              :key="td.title"
               avatar
               @click=""
-            >
-              <v-list-tile-avatar>
-                <img :src="item.avatar">
-              </v-list-tile-avatar>
+          >
+            <v-list-tile-avatar>
+              <v-icon :color="td.done ? 'success' : 'secondary'">{{td.done ? 'check' : 'hourglass_empty'}}</v-icon>
+            </v-list-tile-avatar>
 
-              <v-list-tile-content>
-                <v-list-tile-title v-html="item.title"></v-list-tile-title>
-                <v-list-tile-sub-title v-html="item.subtitle"></v-list-tile-sub-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-        </v-list>
-      </v-card>
+            <v-list-tile-content>
+              <v-list-tile-title v-html="td.title"></v-list-tile-title>
+              <v-list-tile-sub-title v-html="td.content"></v-list-tile-sub-title>
+            </v-list-tile-content>
+            <v-list-tile-action>
+              <v-btn icon ripple>
+                <v-icon color="grey lighten-1">info</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+
+        </template>
+      </v-list>
     </v-flex>
+
+    <v-dialog
+        v-model="dialog"
+        width="500"
+    >
+      <v-btn
+          color="primary"
+          dark
+          fab
+          fixed
+          bottom
+          right
+          slot="activator"
+      >
+        <v-icon>edit</v-icon>
+      </v-btn>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Build Things to do</span>
+        </v-card-title>
+        <v-card-text>
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-container grid-list-md>
+              <v-layout wrap>
+                <v-flex xs12>
+                  <v-text-field label="Title" required counter="40" prepend-icon="title"></v-text-field>
+                </v-flex>
+                <v-flex xs12>
+                  <v-text-field label="Content" hint="Try harder" counter="40" prepend-icon="note"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6>
+                  <v-menu
+                      ref="menuDate"
+                      :close-on-content-click="false"
+                      v-model="menuDate"
+                      :nudge-right="40"
+                      :return-value.sync="date"
+                      lazy
+                      transition="scale-transition"
+                      offset-y
+                      full-width
+                      min-width="290px"
+                  >
+                    <v-text-field
+                        slot="activator"
+                        v-model="date"
+                        label="Goal Date"
+                        prepend-icon="event"
+                        readonly
+                    ></v-text-field>
+                    <v-date-picker v-model="date" @input="$refs.menuDate.save(date)"></v-date-picker>
+
+                  </v-menu>
+                </v-flex>
+                <v-flex xs12 sm6>
+                  <v-menu
+                      ref="menuTime"
+                      :close-on-content-click="false"
+                      v-model="menuTime"
+                      :nudge-right="40"
+                      :return-value.sync="time"
+                      lazy
+                      transition="scale-transition"
+                      offset-y
+                      full-width
+                      max-width="290px"
+                      min-width="290px"
+                  >
+                    <v-text-field
+                        slot="activator"
+                        v-model="time"
+                        label="Goal time"
+                        prepend-icon="access_time"
+                        readonly
+                    ></v-text-field>
+                    <v-time-picker
+                        v-if="menuTime"
+                        v-model="time"
+                        @change="$refs.menuTime.save(time)"
+                    ></v-time-picker>
+                  </v-menu>
+                </v-flex>
+
+                <v-flex xs12 sm6>
+                  <v-select
+                      :items="['Home', 'Work', 'Etc']"
+                      label="Type"
+                      required
+                  ></v-select>
+                </v-flex>
+
+              </v-layout>
+            </v-container>
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" flat @click.native="dialog = false">Close</v-btn>
+          <v-btn color="blue darken-1" flat @click.native="save()">Save</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-layout>
 </template>
 
 <script>
   export default {
+    name: 'welcome',
     data () {
       return {
-        items: [
-          { header: 'Today' },
+        todos: [
           {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/1.jpg',
-            title: 'Brunch this weekend?',
-            subtitle: "<span class='text--primary'>Ali Connors</span> &mdash; I'll be in your neighborhood doing errands this weekend. Do you want to hang out?"
-          },
-          { divider: true, inset: true },
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/2.jpg',
-            title: 'Summer BBQ <span class="grey--text text--lighten-1">4</span>',
-            subtitle: "<span class='text--primary'>to Alex, Scott, Jennifer</span> &mdash; Wish I could come, but I'm out of town this weekend."
-          },
-          { divider: true, inset: true },
-          {
-            avatar: 'https://cdn.vuetifyjs.com/images/lists/3.jpg',
-            title: 'Oui oui',
-            subtitle: "<span class='text--primary'>Sandra Adams</span> &mdash; Do you have Paris recommendations? Have you ever been?"
+            rt: new Date(),
+            t: new Date(),
+            type: 0,
+            title: 'Your title',
+            content: 'Try harder!!',
+            done: false
           }
-        ]
+        ],
+        menuDate: false,
+        menuTime: false,
+        date: null,
+        time: null,
+        valid: false,
+        dialog: false
+      }
+    },
+    method: {
+      save () {
+        this.dialog = false
       }
     }
   }

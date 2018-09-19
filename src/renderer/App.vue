@@ -62,4 +62,8 @@
 <style>
   @import url('https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons');
   /* Global CSS */
+  .btn--floating .icon {
+    height: 28px;
+    width: 32px;
+  }
 </style>
