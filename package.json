@@ -7,6 +7,7 @@
   "main": "./dist/electron/main.js",
   "scripts": {
     "build": "node .electron-vue/build.js && electron-builder",
+    "build:win": "node .electron-vue/build.js && electron-builder --w",
     "build:dir": "node .electron-vue/build.js && electron-builder --dir",
     "build:clean": "cross-env BUILD_TARGET=clean node .electron-vue/build.js",
     "build:web": "cross-env BUILD_TARGET=web node .electron-vue/build.js",
@@ -24,7 +25,7 @@
   },
   "build": {
     "productName": "todo",
-    "appId": "org.simulatedgreg.electron-vue",
+    "appId": "com.syuk.todo",
     "directories": {
       "output": "build"
     },
@@ -59,7 +60,9 @@
   "dependencies": {
     "add": "^2.0.6",
     "axios": "^0.16.1",
+    "build": "^0.1.4",
     "moment": "^2.22.2",
+    "nedb": "^1.8.0",
     "vue": "^2.4.2",
     "vue-electron": "^1.0.6",
     "vue-router": "^2.5.3",
